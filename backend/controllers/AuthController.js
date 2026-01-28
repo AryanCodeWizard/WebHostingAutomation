@@ -123,7 +123,7 @@ export const signup = async (req, res) => {
             name: name,
             email: email,
             password: hashedPassword,
-            systemRole: systemRole,
+            role: systemRole,
             isActive: true,
             emailVerified: true,
         }
@@ -289,6 +289,7 @@ export const changePassword = async (req, res) => {
 
 //reset password via token and sent to the email - to be implemented later
 export const resetPassword = async (req, res) => {
+    
     try{
 
     }

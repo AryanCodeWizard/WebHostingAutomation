@@ -1,0 +1,273 @@
+{
+  "info": {
+    "name": "Products API Collection",
+    "_postman_id": "p9r8o7d6-products-api-collection",
+    "description": "Product CRUD APIs for WHMCS Alternative system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000/api",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "YOUR_ADMIN_JWT_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "product_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get All Products (Public)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/products?page=1&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["products"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1",
+              "description": "Page number"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Items per page"
+            },
+            {
+              "key": "type",
+              "value": "hosting",
+              "disabled": true,
+              "description": "Filter by type: hosting, vps, saas, domain"
+            },
+            {
+              "key": "search",
+              "value": "premium",
+              "disabled": true,
+              "description": "Search by product name"
+            }
+          ]
+        },
+        "description": "Get all products with pagination, filtering by type, and search functionality. No authentication required."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Product by ID (Public)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["products", "{{product_id}}"]
+        },
+        "description": "Get a single product by its ID. No authentication required."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Product - Hosting (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Premium Hosting\",\n  \"type\": \"hosting\",\n  \"pricing\": {\n    \"monthly\": 29.99,\n    \"yearly\": 299.99\n  },\n  \"configOptions\": {\n    \"disk\": \"50GB SSD\",\n    \"bandwidth\": \"unlimited\",\n    \"domains\": 5,\n    \"email\": 100,\n    \"ssl\": true,\n    \"backups\": \"daily\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": ["{{base_url}}"],
+          "path": ["products"]
+        },
+        "description": "Create a new hosting product. Requires admin authentication."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Product - VPS (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"VPS Standard\",\n  \"type\": \"vps\",\n  \"pricing\": {\n    \"monthly\": 49.99,\n    \"yearly\": 499.99\n  },\n  \"configOptions\": {\n    \"cpu\": \"4 cores\",\n    \"ram\": \"8GB\",\n    \"disk\": \"200GB SSD\",\n    \"bandwidth\": \"5TB\",\n    \"ip\": \"1 dedicated IP\",\n    \"os\": [\"Ubuntu\", \"CentOS\", \"Debian\"]\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": ["{{base_url}}"],
+          "path": ["products"]
+        },
+        "description": "Create a new VPS product. Requires admin authentication."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Product - SaaS (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Project Management Pro\",\n  \"type\": \"saas\",\n  \"pricing\": {\n    \"monthly\": 29.99,\n    \"yearly\": 299.99\n  },\n  \"configOptions\": {\n    \"users\": 50,\n    \"projects\": \"unlimited\",\n    \"storage\": \"100GB\",\n    \"features\": [\"API access\", \"Custom reports\", \"SSO\", \"Webhooks\"]\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": ["{{base_url}}"],
+          "path": ["products"]
+        },
+        "description": "Create a new SaaS product. Requires admin authentication."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Product - Domain (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \".com Domain\",\n  \"type\": \"domain\",\n  \"pricing\": {\n    \"yearly\": 14.99\n  },\n  \"configOptions\": {\n    \"tld\": \".com\",\n    \"privacy\": true,\n    \"autoRenew\": true,\n    \"dnsManagement\": true,\n    \"emailForwarding\": true\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": ["{{base_url}}"],
+          "path": ["products"]
+        },
+        "description": "Create a new domain product. Requires admin authentication."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product (Admin)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Premium Hosting\",\n  \"pricing\": {\n    \"monthly\": 39.99,\n    \"yearly\": 399.99\n  },\n  \"configOptions\": {\n    \"disk\": \"100GB SSD\",\n    \"bandwidth\": \"unlimited\",\n    \"domains\": 10\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["products", "{{product_id}}"]
+        },
+        "description": "Update an existing product. All fields are optional. Requires admin authentication."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product Pricing Only (Admin)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pricing\": {\n    \"monthly\": 24.99\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["products", "{{product_id}}"]
+        },
+        "description": "Update only the pricing of a product. Requires admin authentication."
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Product (Admin)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["products", "{{product_id}}"]
+        },
+        "description": "Delete a product permanently. Requires admin authentication."
+      },
+      "response": []
+    }
+  ]
+}

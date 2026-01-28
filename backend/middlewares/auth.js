@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 export const auth = async (req, res, next) => {
     try {
         //Extract token from headers only Industry standard
