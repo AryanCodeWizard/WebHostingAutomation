@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const jobLogSchema = new mongoose.Schema(
   {
@@ -24,6 +24,6 @@ const jobLogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("JobLog", jobLogSchema);
+export default mongoose.model("JobLog", jobLogSchema);
 
 

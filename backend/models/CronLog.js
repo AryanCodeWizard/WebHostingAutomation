@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const cronLogSchema = new mongoose.Schema(
   {
@@ -24,4 +24,4 @@ const cronLogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("CronLog", cronLogSchema);
+export default mongoose.model("CronLog", cronLogSchema);

@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import otpGenerator from "otp-generator";
-import OTP from "../models/Otp.js";
+import OTP from "../models/OTP.js";
 
 export const sendOtp = async (req, res) => {
     try {
@@ -163,9 +163,9 @@ export const login = async (req, res) => {
 
         const user = await User.findOne({ email }).select("+password");
         if (!user) {
-            return res.status(404).json({
+            return res.status(401).json({
                 success: false,
-                message: "User not found. Please signup"
+                message: "Email or Password is incorrect"
             })
         }
 
@@ -175,7 +175,7 @@ export const login = async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid Password. Please try again"
+                message: "Email or Password is incorrect"
             })
         }
 
@@ -289,16 +289,16 @@ export const changePassword = async (req, res) => {
 
 //reset password via token and sent to the email - to be implemented later
 export const resetPassword = async (req, res) => {
-    
-    try{
+
+    try {
 
     }
-    catch(error){
+    catch (error) {
         return res.status(500)
-        .json({
-            success: false,
-            message: "Error while reseting the password",
-            error: error.message
-        })
+            .json({
+                success: false,
+                message: "Error while reseting the password",
+                error: error.message
+            })
     }
 }

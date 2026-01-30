@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const emailLogSchema = new mongoose.Schema(
   {
@@ -29,4 +29,4 @@ const emailLogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("EmailLog", emailLogSchema);
+export default mongoose.model("EmailLog", emailLogSchema);

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ticketSchema = new mongoose.Schema(
   {
@@ -52,7 +52,5 @@ const ticketReplySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = {
-  Ticket: mongoose.model("Ticket", ticketSchema),
-  TicketReply: mongoose.model("TicketReply", ticketReplySchema),
-};
+export const Ticket = mongoose.model("Ticket", ticketSchema);
+export const TicketReply = mongoose.model("TicketReply", ticketReplySchema);
