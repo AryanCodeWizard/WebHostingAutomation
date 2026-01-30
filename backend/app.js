@@ -136,7 +136,8 @@ app.get('/', (req, res) => {
       clients: '/api/clients',
       products: '/api/products',
       orders: '/api/orders',
-      invoices: '/api/invoices'
+      invoices: '/api/invoices',
+      domains: '/api/domains',
     }
   });
 });

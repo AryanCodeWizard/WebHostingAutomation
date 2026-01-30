@@ -5,6 +5,7 @@ import connectDatabase from './config/databse.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoute from './routes/productRoute.js';
 import clientRoutes from './routes/clientRoutes.js';
+import domainRoutes from './routes/goDaddyRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -62,7 +63,8 @@ app.get('/', (req, res) => {
       clients: '/api/clients',
       products: '/api/products',
       orders: '/api/orders',
-      invoices: '/api/invoices'
+      invoices: '/api/invoices',
+      domains: '/api/domains',
     }
   });
 });
@@ -70,6 +72,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoute);
 app.use('/api/clients', clientRoutes);
+app.use('/api/domains',domainRoutes)
 
 
 

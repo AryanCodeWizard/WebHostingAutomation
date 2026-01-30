@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "GoDaddy Domains API Collection",
+    "_postman_id": "gd-collection-001",
+    "description": "Domain management APIs using GoDaddy for WHMCS Alternative system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Check Domain Availability",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4000/api/domains/check?domain=example.com",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4000",
+          "path": ["api", "domains", "check"],
+          "query": [
+            { "key": "domain", "value": "example.com" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Domains (GoDaddy Account)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer YOUR_ADMIN_TOKEN_HERE" }
+        ],
+        "url": {
+          "raw": "http://localhost:4000/api/domains",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4000",
+          "path": ["api", "domains"]
+        }
+      }
+    },
+    {
+      "name": "Get DNS Records",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer YOUR_ADMIN_TOKEN_HERE" }
+        ],
+        "url": {
+          "raw": "http://localhost:4000/api/domains/example.com/dns",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4000",
+          "path": ["api", "domains", "example.com", "dns"]
+        }
+      }
+    },
+    {
+      "name": "Update A Record (Point Domain to Server)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer YOUR_ADMIN_TOKEN_HERE" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ip\": \"192.168.1.10\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:4000/api/domains/example.com/a-record",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4000",
+          "path": ["api", "domains", "example.com", "a-record"]
+        }
+      }
+    }
+  ]
+}
