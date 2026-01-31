@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 
-export const auth = async (req, res, next) => {
+exports.auth = async (req, res, next) => {
     try {
         //Extract token from headers only Industry standard
         const authHeader = req.headers.authorization;
@@ -26,7 +26,7 @@ export const auth = async (req, res, next) => {
         });
     }
 }
-export const isAdmin = async (req, res, next) => {
+exports.isAdmin = async (req, res, next) => {
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({
@@ -45,7 +45,7 @@ export const isAdmin = async (req, res, next) => {
     }
 }
 
-export const isClient = async (req, res, next) => {
+exports.isClient = async (req, res, next) => {
     try {
         if (req.user.role !== 'client') {
             return res.status(403).json({
@@ -64,7 +64,7 @@ export const isClient = async (req, res, next) => {
     }
 }
 
-export const isStaff = async (req, res, next) => {
+exports.isStaff = async (req, res, next) => {
     try {
         if (req.user.role !== 'staff') {
             return res.status(403).json({

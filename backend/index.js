@@ -1,13 +1,14 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import connectDatabase from './config/databse.js';
-import authRoutes from './routes/authRoutes.js';
-import productRoute from './routes/productRoute.js';
-import clientRoutes from './routes/clientRoutes.js';
-import domainRoutes from './routes/goDaddyRoutes.js';
-import paymentRoutes from './routes/paymentRoutes.js';
-import webhookRoutes from './routes/webhookRoutes.js';  
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const connectDatabase = require('./config/databse');
+const authRoutes = require('./routes/authRoutes');
+const productRoute = require('./routes/productRoute');
+const clientRoutes = require('./routes/clientRoutes');
+const domainRoutes = require('./routes/goDaddyRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
+require('dotenv').config();  
 
 const app = express();
 const PORT = process.env.PORT || 4000;

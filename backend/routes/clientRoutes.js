@@ -1,12 +1,12 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   getAllClients,
   getClientById,
 //   createClient,
   updateClient,
   deleteClient,
-} from "../controllers/ClientController.js";
-import { auth, isAdmin } from "../middlewares/auth.js";
+} = require("../controllers/ClientController");
+const { auth, isAdmin } = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -29,4 +29,4 @@ router.put("/:id", auth, updateClient);
 // DELETE /api/clients/:id - Delete a client (Admin only)
 router.delete("/:id", auth, isAdmin, deleteClient);
 
-export default router;
+module.exports = router;

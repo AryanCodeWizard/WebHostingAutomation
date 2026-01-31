@@ -1,9 +1,9 @@
-import Client from "../models/Client.js";
-import User from "../models/User.js";
-import mongoose from "mongoose";
+const Client = require("../models/Client");
+const User = require("../models/User");
+const mongoose = require("mongoose");
 
 // GET /api/clients - Get all clients
-export const getAllClients = async (req, res) => {
+exports.getAllClients = async (req, res) => {
   try {
     const clients = await Client.find({})
         .populate("userId", "email role createdAt updatedAt")
@@ -23,7 +23,7 @@ export const getAllClients = async (req, res) => {
 };
 
 // GET /api/clients/:id - Get a single client by ID
-export const getClientById = async (req, res) => {
+exports.getClientById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -65,7 +65,7 @@ export const getClientById = async (req, res) => {
 
 
 // PUT /api/clients/:id - Update a client
-export const updateClient = async (req, res) => {
+exports.updateClient = async (req, res) => {
   try {
     const { id } = req.params;
     const { company, address, gst, walletBalance } = req.body;
@@ -127,7 +127,7 @@ export const updateClient = async (req, res) => {
 };
 
 // DELETE /api/clients/:id - Delete a client
-export const deleteClient = async (req, res) => {
+exports.deleteClient = async (req, res) => {
   try {
     const { id } = req.params;
 

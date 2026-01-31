@@ -23,6 +23,10 @@ const transactionSchema = new mongoose.Schema(
       type: String,
     },
 
+    paymentId: {
+      type: String,
+    },
+
     status: {
       type: String,
       enum: ["pending", "success", "failed"],

@@ -1,12 +1,12 @@
-import {
+const {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
-} from "../controllers/ProductController.js";
-import express from "express";
-import { auth, isAdmin } from "../middlewares/auth.js";
+} = require("../controllers/ProductController");
+const express = require("express");
+const { auth, isAdmin } = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -25,4 +25,4 @@ router.put("/:id", auth, isAdmin, updateProduct);
 // DELETE /api/products/:id - Delete a product (Admin only)
 router.delete("/:id", auth, isAdmin, deleteProduct);
 
-export default router;
+module.exports = router;

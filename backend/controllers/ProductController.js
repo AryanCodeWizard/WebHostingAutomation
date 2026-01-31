@@ -1,8 +1,8 @@
-import Product from "../models/Product.js";
-import mongoose from "mongoose";
+const Product = require("../models/Product");
+const mongoose = require("mongoose");
 
 // GET /api/products - Get all products
-export const getAllProducts = async (req, res) => {
+exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
     res.status(200).json({
@@ -23,7 +23,7 @@ export const getAllProducts = async (req, res) => {
 };
 
 // GET /api/products/:id - Get a single product by ID
-export const getProductById = async (req, res) => {
+exports.getProductById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -60,7 +60,7 @@ export const getProductById = async (req, res) => {
 };
 
 // POST /api/products - Create a new product
-export const createProduct = async (req, res) => {
+exports.createProduct = async (req, res) => {
   try {
     const { name, type, pricing, configOptions } = req.body;
 
@@ -130,7 +130,7 @@ export const createProduct = async (req, res) => {
 };
 
 // PUT /api/products/:id - Update a product
-export const updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, type, pricing, configOptions } = req.body;
@@ -227,7 +227,7 @@ export const updateProduct = async (req, res) => {
 };
 
 // DELETE /api/products/:id - Delete a product
-export const deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 

@@ -68,16 +68,43 @@ const Payment = ({ invoiceId, amount, onSuccess, onFailure }) => {
         handler: async function (response) {
           // Payment successful
           console.log('Payment Success:', response);
-          setPaymentStatus('success');
-          setLoading(false);
           
-          // Call success callback if provided
-          if (onSuccess) {
-            onSuccess({
-              razorpay_payment_id: response.razorpay_payment_id,
+          try {
+            // Verify payment on backend
+            const verifyResponse = await axios.post(`${API_URL}/api/payments/verify-payment`, {
               razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
+            
+            console.log('Payment verified:', verifyResponse.data);
+            setPaymentStatus('success');
+            setLoading(false);
+            
+            // Call success callback if provided
+            if (onSuccess) {
+              onSuccess({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                verified: true,
+                transaction: verifyResponse.data.transaction,
+                invoice: verifyResponse.data.invoice,
+                order: verifyResponse.data.order,
+              });
+            }
+          } catch (verifyError) {
+            console.error('Payment verification failed:', verifyError);
+            setError(verifyError.response?.data?.error || 'Payment verification failed');
+            setPaymentStatus('error');
+            setLoading(false);
+            
+            if (onFailure) {
+              onFailure({ 
+                message: 'Payment received but verification failed. Please contact support.',
+                error: verifyError.response?.data?.error 
+              });
+            }
           }
         },
         prefill: {

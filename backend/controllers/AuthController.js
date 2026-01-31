@@ -1,10 +1,10 @@
-import User from "../models/User.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import otpGenerator from "otp-generator";
-import OTP from "../models/Otp.js";
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const otpGenerator = require("otp-generator");
+const OTP = require("../models/Otp");
 
-export const sendOtp = async (req, res) => {
+exports.sendOtp = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
@@ -59,7 +59,7 @@ export const sendOtp = async (req, res) => {
     }
 }
 
-export const signup = async (req, res) => {
+exports.signup = async (req, res) => {
     try {
 
         const { name, email, password, confirmPassword, systemRole, otp } = req.body;
@@ -150,7 +150,7 @@ export const signup = async (req, res) => {
     }
 }
 
-export const login = async (req, res) => {
+exports.login = async (req, res) => {
 
     try {
         const { email, password } = req.body;
@@ -234,7 +234,7 @@ export const login = async (req, res) => {
     }
 }
 
-export const changePassword = async (req, res) => {
+exports.changePassword = async (req, res) => {
     try {
         const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
 
@@ -288,7 +288,7 @@ export const changePassword = async (req, res) => {
 }
 
 //reset password via token and sent to the email - to be implemented later
-export const resetPassword = async (req, res) => {
+exports.resetPassword = async (req, res) => {
     
     try{
 

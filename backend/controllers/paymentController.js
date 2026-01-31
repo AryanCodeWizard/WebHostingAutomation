@@ -1,5 +1,8 @@
 const razorpay = require("../config/razorpay");
+const crypto = require("crypto");
 const Transaction = require("../models/Transaction");
+const Invoice = require("../models/Invoice");
+const Order = require("../models/Order");
 const mongoose = require("mongoose");
 
 exports.createRazorpayOrder = async (req, res) => {
@@ -66,6 +69,89 @@ exports.createRazorpayOrder = async (req, res) => {
     console.error("Payment Controller Error:", err);
     res.status(500).json({ 
       error: err.message || "Failed to create order"
+    });
+  }
+};
+
+// Verify payment after successful Razorpay payment
+exports.verifyPayment = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    // Validate input
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ 
+        error: "Missing required payment details" 
+      });
+    }
+
+    // Verify signature
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest("hex");
+
+    const isAuthentic = expectedSignature === razorpay_signature;
+
+    if (!isAuthentic) {
+      return res.status(400).json({ 
+        error: "Invalid payment signature" 
+      });
+    }
+
+    console.log("Payment verified successfully:", razorpay_payment_id);
+
+    // Update transaction status
+    const transaction = await Transaction.findOneAndUpdate(
+      { ref: razorpay_order_id },
+      { 
+        status: "success",
+        paymentId: razorpay_payment_id 
+      },
+      { new: true }
+    );
+
+    if (!transaction) {
+      return res.status(404).json({ 
+        error: "Transaction not found" 
+      });
+    }
+
+    // Update invoice status
+    const invoice = await Invoice.findByIdAndUpdate(
+      transaction.invoiceId,
+      { status: "paid" },
+      { new: true }
+    );
+
+    if (!invoice) {
+      return res.status(404).json({ 
+        error: "Invoice not found" 
+      });
+    }
+
+    // Update order status
+    const order = await Order.findOneAndUpdate(
+      { invoiceId: invoice._id },
+      { status: "completed" },
+      { new: true }
+    ).populate("clientId");
+
+    console.log("Order completed:", order?._id);
+
+    res.json({
+      success: true,
+      message: "Payment verified successfully",
+      transaction,
+      invoice,
+      order
+    });
+
+  } catch (err) {
+    console.error("Payment Verification Error:", err);
+    res.status(500).json({ 
+      error: err.message || "Failed to verify payment"
     });
   }
 };

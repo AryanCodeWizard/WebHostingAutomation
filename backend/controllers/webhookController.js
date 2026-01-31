@@ -71,6 +71,11 @@ exports.razorpayWebhook = async (req, res) => {
         { new: true }
       ).populate("clientId");
   
+      if (!order) {
+        console.error("Order not found for invoice:", invoice._id);
+        return res.status(404).json({ message: "Order not found" });
+      }
+
       const domainItem = order.items.find(
         item => item.config?.domain
       );
@@ -78,8 +83,11 @@ exports.razorpayWebhook = async (req, res) => {
 
       if (domainItem) {
         const domainName = domainItem.config.domain;
-      
-        await godaddyAPI.post("/v1/domains/purchase", {
+        
+        console.log("Attempting to purchase domain:", domainName);
+        
+        try {
+          await godaddyAPI.post("/v1/domains/purchase", {
           consent: {
             agreedAt: new Date().toISOString(), // Required legal consent time
             agreedBy: "127.0.0.1",              // IP address
@@ -148,6 +156,13 @@ exports.razorpayWebhook = async (req, res) => {
             }
           }
         });
+        
+        console.log("✅ Domain purchased successfully:", domainName);
+        } catch (domainError) {
+          console.error("❌ Domain purchase failed:", domainError.response?.data || domainError.message);
+          // Don't fail the whole webhook if domain purchase fails
+          // You might want to send an email notification here
+        }
       }
     }
 
