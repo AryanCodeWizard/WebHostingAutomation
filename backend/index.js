@@ -6,6 +6,8 @@ import authRoutes from './routes/authRoutes.js';
 import productRoute from './routes/productRoute.js';
 import clientRoutes from './routes/clientRoutes.js';
 import domainRoutes from './routes/goDaddyRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import webhookRoutes from './routes/webhookRoutes.js';  
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -73,6 +75,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoute);
 app.use('/api/clients', clientRoutes);
 app.use('/api/domains',domainRoutes)
+app.use("/api/payments",paymentRoutes);
+app.use("/api/webhooks", webhookRoutes);
+
 
 
 

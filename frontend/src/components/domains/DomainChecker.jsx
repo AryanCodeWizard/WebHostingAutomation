@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Search, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 // import { domainAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const DomainChecker = () => {
   const [domain, setDomain] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleCheck = async (e) => {
     e.preventDefault();
@@ -34,6 +36,42 @@ const DomainChecker = () => {
       setLoading(false);
     }
   };
+
+  const handleRegister = () => {
+    // In a real app, you would create an invoice on the backend first
+    // For now, we'll pass the domain and price data to the payment page
+    
+    // Example: Create invoice via API
+    // const invoice = await createInvoice({ domain, price: result.price });
+    
+    // GoDaddy returns price in microdollars (1/1,000,000 of a dollar)
+    // Convert: microdollars / 1,000,000 = dollars
+    // Then convert to INR (approximate rate: 1 USD = 83 INR)
+    const priceInDollars = result?.price ? result.price / 1000000 : 10;
+    const priceInINR = Math.round(priceInDollars * 83); // Convert USD to INR
+    
+    // For demo/testing purposes, generate mock invoice data
+    const mockInvoiceId = `INV${Date.now()}`; // Replace with actual invoice ID from backend
+    
+    console.log('Domain Registration:', {
+      domain,
+      priceInMicrodollars: result?.price,
+      priceInDollars,
+      priceInINR
+    });
+    
+    navigate("/domains/purchase", { 
+      state: { 
+        invoice: {
+          invoiceId: mockInvoiceId,
+          amount: priceInINR,
+          domain: domain,
+          originalPrice: result?.price,
+          currency: 'INR'
+        }
+      } 
+    });
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -96,15 +134,19 @@ const DomainChecker = () => {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-gray-700">Price (1st year)</span>
-                    <span className="text-2xl font-bold text-indigo-600">${result.price}</span>
+                    <span className="text-2xl font-bold text-indigo-600">
+                      ${(result.price / 1000000).toFixed(2)}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-500">Exclusive of taxes and fees</p>
+                  <p className="text-sm text-gray-500">
+                    Approx. ₹{Math.round((result.price / 1000000) * 83)} (excl. taxes)
+                  </p>
                 </div>
               )}
 
               {result.available && (
                 <div className="md:col-span-2">
-                  <button className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                  <button className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium" onClick={handleRegister}>
                     Register This Domain
                   </button>
                 </div>

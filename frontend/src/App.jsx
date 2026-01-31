@@ -6,6 +6,9 @@ import DomainChecker from './components/domains/DomainChecker'
 import DomainList from './components/domains/DomainList'
 import DNSManager from './components/domains/DNSManager'
 import ARecordUpdater from './components/domains/ARecordUpdater'
+import './App.css'
+import './index.css'
+import PaymentPage from './components/domainPurchase/PaymentPage'
 
 const App = () => {
   return (
@@ -17,6 +20,8 @@ const App = () => {
             <Route path="/domains" element={<DomainList />} />
             <Route path="/dns" element={<DNSManager />} />
             <Route path="/dns/:domain" element={<ARecordUpdater />} />
+            <Route path="/domains/purchase" element={<PaymentPage />} />
+            <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
   )
