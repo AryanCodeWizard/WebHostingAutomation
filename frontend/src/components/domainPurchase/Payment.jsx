@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Payment = ({ invoiceId, amount, onSuccess, onFailure }) => {
+const Payment = ({ invoiceId, amount, domainName, onSuccess, onFailure }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
   const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
   // Load Razorpay script dynamically (backup if not loaded from HTML)
@@ -27,10 +27,11 @@ const Payment = ({ invoiceId, amount, onSuccess, onFailure }) => {
   // Create Razorpay Order
   const createOrder = async () => {
     try {
-      console.log('Creating order with:', { invoiceId, amount });
-      const response = await axios.post(`${API_URL}/api/payments/create-order`, {
+      console.log('Creating order with:', { invoiceId, amount, domainName });
+      const response = await axios.post(`${API_URL}/payments/create-order`, {
         invoiceId,
         amount,
+        domainName, // Pass domain name for order creation
       });
       console.log('Order created successfully:', response.data);
       return response.data;
@@ -71,7 +72,7 @@ const Payment = ({ invoiceId, amount, onSuccess, onFailure }) => {
           
           try {
             // Verify payment on backend
-            const verifyResponse = await axios.post(`${API_URL}/api/payments/verify-payment`, {
+            const verifyResponse = await axios.post(`${API_URL}/payments/verify-payment`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,

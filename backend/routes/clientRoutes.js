@@ -1,5 +1,7 @@
 const express = require("express");
 const {
+  getMyProfile,
+  updateMyProfile,
   getAllClients,
   getClientById,
 //   createClient,
@@ -13,6 +15,12 @@ const router = express.Router();
 // All routes require authentication
 // Admin can perform all operations
 // Clients can only view their own data (implement in controller if needed)
+
+// GET /api/clients/me - Get current user's client profile (Any authenticated user)
+router.get("/me", auth, getMyProfile);
+
+// PUT /api/clients/me - Update current user's client profile (Any authenticated user)
+router.put("/me", auth, updateMyProfile);
 
 // GET /api/clients - Get all clients (Admin only)
 router.get("/", auth, isAdmin, getAllClients);

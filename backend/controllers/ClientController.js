@@ -2,6 +2,81 @@ const Client = require("../models/Client");
 const User = require("../models/User");
 const mongoose = require("mongoose");
 
+// GET /api/clients/me - Get current user's client profile
+exports.getMyProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    let client = await Client.findOne({ userId })
+      .populate("userId", "name email role createdAt")
+      .lean();
+
+    // Auto-create if doesn't exist
+    if (!client) {
+      client = await Client.create({ userId });
+      client = await Client.findById(client._id)
+        .populate("userId", "name email role createdAt")
+        .lean();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Client profile retrieved successfully",
+      data: client,
+    });
+  } catch (error) {
+    console.error("Error fetching client profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching client profile",
+      error: error.message,
+    });
+  }
+};
+
+// PUT /api/clients/me - Update current user's client profile
+exports.updateMyProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { company, address, gst } = req.body;
+
+    let client = await Client.findOne({ userId });
+
+    // Auto-create if doesn't exist
+    if (!client) {
+      client = await Client.create({ userId });
+    }
+
+    // Build update object (only include provided fields)
+    const updateData = {};
+    if (company !== undefined) updateData.company = company;
+    if (address !== undefined) updateData.address = address;
+    if (gst !== undefined) updateData.gst = gst;
+
+    // Update client
+    const updatedClient = await Client.findByIdAndUpdate(
+      client._id,
+      updateData,
+      { new: true, runValidators: true }
+    )
+      .populate("userId", "name email role createdAt")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Client profile updated successfully",
+      data: updatedClient,
+    });
+  } catch (error) {
+    console.error("Error updating client profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating client profile",
+      error: error.message,
+    });
+  }
+};
+
 // GET /api/clients - Get all clients
 exports.getAllClients = async (req, res) => {
   try {

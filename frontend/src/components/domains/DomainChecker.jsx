@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Search, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 // import { domainAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import cartService from '../../services/cartService';
+import api from '../../services/axiosConfig';
 
 const DomainChecker = () => {
   const [domain, setDomain] = useState('');
@@ -27,8 +29,9 @@ const DomainChecker = () => {
       const data = await response.json();
       console.log("Domain Check Response:", data);
       
-      // Backend returns data directly, not wrapped in {data: ...}
-      setResult(data);
+      // Backend returns {success: true, message: '...', data: {...}}
+      // Extract the actual domain data from response
+      setResult(data.data || data);
     } catch (err) {
       console.error("Domain Check Error:", err);
       setError(err.message || 'Failed to check domain availability');
@@ -37,40 +40,50 @@ const DomainChecker = () => {
     }
   };
 
-  const handleRegister = () => {
-    // In a real app, you would create an invoice on the backend first
-    // For now, we'll pass the domain and price data to the payment page
-    
-    // Example: Create invoice via API
-    // const invoice = await createInvoice({ domain, price: result.price });
-    
-    // GoDaddy returns price in microdollars (1/1,000,000 of a dollar)
-    // Convert: microdollars / 1,000,000 = dollars
-    // Then convert to INR (approximate rate: 1 USD = 83 INR)
-    const priceInDollars = result?.price ? result.price / 1000000 : 10;
-    const priceInINR = Math.round(priceInDollars * 83); // Convert USD to INR
-    
-    // For demo/testing purposes, generate mock invoice data
-    const mockInvoiceId = `INV${Date.now()}`; // Replace with actual invoice ID from backend
-    
-    console.log('Domain Registration:', {
-      domain,
-      priceInMicrodollars: result?.price,
-      priceInDollars,
-      priceInINR
-    });
-    
-    navigate("/domains/purchase", { 
-      state: { 
-        invoice: {
-          invoiceId: mockInvoiceId,
-          amount: priceInINR,
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+      
+      // GoDaddy returns price in microdollars (1/1,000,000 of a dollar)
+      // Convert: microdollars / 1,000,000 = dollars
+      // Then convert to INR (approximate rate: 1 USD = 83 INR)
+      const priceInDollars = result?.price ? result.price / 1000000 : 10;
+      const priceInINR = Math.round(priceInDollars * 83); // Convert USD to INR
+      
+      console.log('Adding domain to cart:', {
+        domain,
+        priceInMicrodollars: result?.price,
+        priceInDollars,
+        priceInINR
+      });
+      
+      // First, find the domain product (you may need to fetch this from products API)
+      // For now, assuming you have a domain product with a specific ID
+      // You'll need to create a "Domain Registration" product in your database
+      const productId = '697e5e71d8f29f3bd1f5ce66'; // Domain Registration product
+      
+      // Add domain to cart with config
+      await cartService.addToCart({
+        productId,
+        quantity: 1,
+        config: {
           domain: domain,
-          originalPrice: result?.price,
-          currency: 'INR'
+          period: 1 // 1 year
         }
-      } 
-    });
+      });
+      
+      console.log('✅ Domain added to cart');
+      
+      // Show success message and redirect to cart
+      alert(`✅ ${domain} added to cart!`);
+      navigate('/cart');
+      
+    } catch (err) {
+      console.error('❌ Error adding to cart:', err);
+      setError(err.response?.data?.message || 'Failed to add domain to cart. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

@@ -19,8 +19,9 @@ const DomainList = () => {
       const response = await fetch('http://localhost:4000/api/domains').then(res => res.json());
       console.log("Domains API Response:", response);
       
-      // Backend returns array directly, not wrapped in {data: ...}
-      setDomains(Array.isArray(response) ? response : []);
+      // Backend returns {success: true, message: '...', data: [...]}
+      const domainData = response.data || response;
+      setDomains(Array.isArray(domainData) ? domainData : []);
     } catch (err) {
       console.error("Error fetching domains:", err);
       setError(err.message || 'Failed to fetch domains');

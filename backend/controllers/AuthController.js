@@ -1,61 +1,60 @@
 const User = require("../models/User");
+const Client = require("../models/Client");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const otpGenerator = require("otp-generator");
 const OTP = require("../models/Otp");
+const logger = require("../utils/logger");
+const { sendSuccess, sendError } = require("../utils/response");
+const { HTTP_STATUS, USER_ROLES, SUCCESS_MESSAGES, ERROR_MESSAGES } = require("../constants");
 
+/**
+ * Send OTP to email for signup verification
+ * @route POST /api/auth/send-otp
+ * @param {String} req.body.email - User email
+ */
 exports.sendOtp = async (req, res) => {
     try {
         const { email } = req.body;
+        
         if (!email) {
-            console.log("Email is missing while Sending OTP")
+            return sendError(res, "Email is required", HTTP_STATUS.BAD_REQUEST);
         }
+
+        // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(429).json({
-                success: false,
-                message: "User already registered"
-            })
+            return sendError(res, "User already registered", HTTP_STATUS.UNPROCESSABLE_ENTITY);
         }
-        var otp = otpGenerator.generate(6, {
+
+        // Generate unique OTP
+        let otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
             lowerCaseAlphabets: false
         });
 
-        let result = await OTP.findOne({ otp: otp });
-        while (result) {
+        // Ensure OTP is unique
+        let existingOtp = await OTP.findOne({ otp });
+        while (existingOtp) {
             otp = otpGenerator.generate(6, {
                 upperCaseAlphabets: false,
                 specialChars: false,
                 lowerCaseAlphabets: false
             });
-            result = await OTP.findOne({ otp: otp });
+            existingOtp = await OTP.findOne({ otp });
         }
 
-        const otpPayload = {
-            otp: otp,
-            email: email
-        }
+        // Save OTP to database
+        await OTP.create({ otp, email });
 
-        await OTP.create(otpPayload);
+        logger.info(`OTP generated for email: ${email}`);
+        logger.debug(`OTP: ${otp}`);
 
-
-        console.log(`OTP for ${email} is ${otp}`);
-
-        return res.status(200).json({
-            success: true,
-            message: "OTP sent successfully",
-            otp: otp
-        })
-    }
-    catch (error) {
-        return res.status(500)
-            .json({
-                success: false,
-                message: "Error while sending OTP",
-                error: error.message
-            });
+        return sendSuccess(res, { otp }, SUCCESS_MESSAGES.OTP_SENT);
+    } catch (error) {
+        logger.error("Failed to send OTP", error);
+        return sendError(res, "Error while sending OTP", HTTP_STATUS.INTERNAL_SERVER_ERROR, error);
     }
 }
 
@@ -128,9 +127,17 @@ exports.signup = async (req, res) => {
             emailVerified: true,
         }
 
-        await User.create(data);
+        const newUser = await User.create(data);
         await OTP.deleteOne({ email: email, otp: otp });
 
+        // 🆕 Auto-create Client profile for new users
+        if (systemRole === 'client') {
+            await Client.create({
+                userId: newUser._id,
+                walletBalance: 0,
+            });
+            console.log("Client profile created for user:", newUser._id);
+        }
 
         return res.status(201).json({
             success: true,

@@ -17,6 +17,7 @@ const PaymentPage = () => {
   // State for invoice data
   const [invoiceId, setInvoiceId] = useState(invoiceFromState?.invoiceId || '');
   const [amount, setAmount] = useState(invoiceFromState?.amount || '');
+  const [domainName, setDomainName] = useState(invoiceFromState?.domain || '');
   const [showManualEntry, setShowManualEntry] = useState(!invoiceFromState);
 
   const handlePaymentSuccess = (paymentData) => {
@@ -124,6 +125,7 @@ const PaymentPage = () => {
     <Payment
       invoiceId={invoiceId}
       amount={parseFloat(amount)}
+      domainName={domainName}
       onSuccess={handlePaymentSuccess}
       onFailure={handlePaymentFailure}
     />

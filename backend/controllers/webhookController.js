@@ -83,22 +83,24 @@ exports.razorpayWebhook = async (req, res) => {
 
       if (domainItem) {
         const domainName = domainItem.config.domain;
+        const period = domainItem.config.period || 1; // Default 1 year
         
-        console.log("Attempting to purchase domain:", domainName);
+        console.log("Attempting to purchase domain:", domainName, "for", period, "year(s)");
         
         try {
-          await godaddyAPI.post("/v1/domains/purchase", {
+          // Call GoDaddy API to purchase domain
+          const godaddyResponse = await godaddyAPI.post("/v1/domains/purchase", {
           consent: {
-            agreedAt: new Date().toISOString(), // Required legal consent time
-            agreedBy: "127.0.0.1",              // IP address
-            agreementKeys: ["DNRA"]             // GoDaddy agreement
+            agreedAt: new Date().toISOString(),
+            agreedBy: "127.0.0.1",
+            agreementKeys: ["DNRA"]
           },
 
-          domain: domainName,   // Domain to purchase
-          period: 1,            // 1 year registration
-          privacy: true,        // Enable WHOIS privacy
+          domain: domainName,
+          period: period, // Use period from cart config
+          privacy: true,
 
-          // Admin contact details (must be valid)
+          // Admin contact details
           contactAdmin: {
             nameFirst: "SaaSify",
             nameLast: "SaaSify",
@@ -113,7 +115,6 @@ exports.razorpayWebhook = async (req, res) => {
             }
           },
 
-          // These MUST be provided or GoDaddy will fail
           contactRegistrant: {
             nameFirst: "SaaSify",
             nameLast: "SaaSify",
@@ -157,7 +158,32 @@ exports.razorpayWebhook = async (req, res) => {
           }
         });
         
-        console.log("✅ Domain purchased successfully:", domainName);
+        console.log("✅ Domain purchased successfully from GoDaddy:", domainName);
+
+        // 7️⃣ SAVE DOMAIN TO DATABASE (This was missing!)
+        const Domain = require("../models/Domain");
+        
+        // Check if domain already exists (prevent duplicates)
+        const existingDomain = await Domain.findOne({ name: domainName });
+        
+        if (!existingDomain) {
+          // Calculate expiry date based on registration period
+          const expiryDate = new Date();
+          expiryDate.setFullYear(expiryDate.getFullYear() + period);
+
+          const savedDomain = await Domain.create({
+            clientId: order.clientId,
+            name: domainName,
+            registrar: "godaddy",
+            expiryDate: expiryDate,
+            status: "active",
+          });
+
+          console.log("✅ Domain saved to database:", savedDomain._id, savedDomain.name);
+        } else {
+          console.log("⚠️  Domain already exists in database:", existingDomain._id);
+        }
+
         } catch (domainError) {
           console.error("❌ Domain purchase failed:", domainError.response?.data || domainError.message);
           // Don't fail the whole webhook if domain purchase fails

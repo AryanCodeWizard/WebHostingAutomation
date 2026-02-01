@@ -5,7 +5,11 @@ const transactionSchema = new mongoose.Schema(
     invoiceId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Invoice",
-      required: true,
+      index: true,
+    },
+
+    invoiceNumber: {
+      type: String,
       index: true,
     },
 
@@ -31,6 +35,10 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "success", "failed"],
       default: "pending",
+    },
+    
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
     },
   },
   { timestamps: true }

@@ -8,6 +8,9 @@ const clientRoutes = require('./routes/clientRoutes');
 const domainRoutes = require('./routes/goDaddyRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const checkoutRoutes = require('./routes/checkoutRoutes');
+const domainPurchaseRoutes = require('./routes/domainPurchaseRoutes');
 require('dotenv').config();  
 
 const app = express();
@@ -78,6 +81,9 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/domains',domainRoutes)
 app.use("/api/payments",paymentRoutes);
 app.use("/api/webhooks", webhookRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/domain-purchase', domainPurchaseRoutes);
 
 
 
